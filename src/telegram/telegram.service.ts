@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { TelegramClient } from 'telegram';
-import { StringSession } from 'telegram/sessions';
+import { StoreSession } from 'telegram/sessions';
 import { Api } from 'telegram/tl';
 import { getTelegramConfig } from '../config/telegram.config';
 import { subDays, startOfDay } from 'date-fns';
@@ -24,7 +24,8 @@ export class TelegramService implements OnModuleDestroy {
     }
 
     try {
-      const session = new StringSession('');
+      // Persist session to disk using StoreSession (backed by node-localstorage)
+      const session = new StoreSession(this.config.sessionName);
       this.client = new TelegramClient(session, this.config.apiId, this.config.apiHash, {
         connectionRetries: 5,
       });
